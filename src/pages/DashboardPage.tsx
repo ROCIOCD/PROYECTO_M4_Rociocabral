@@ -55,16 +55,16 @@ const STATUS_ICONS: Record<TaskStatus, React.ReactNode> = {
   'done': <CheckCircle2 size={16} />,
 };
 
-const TODAY = new Date().toISOString().split('T')[0];
+//const _TODAY = new Date().toISOString().split('T')[0];
 
 // ── Avatares predeterminados ──────────────────────────────────────
 const PRESET_AVATARS = [
   { id: 'sakura', url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Sakura&backgroundColor=fce4ec', label: 'Sakura' },
-  { id: 'hana',   url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Hana&backgroundColor=f8bbd0',   label: 'Hana'   },
-  { id: 'yuki',   url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Yuki&backgroundColor=e8eaf6',   label: 'Yuki'   },
-  { id: 'luna',   url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Luna&backgroundColor=ede7f6',   label: 'Luna'   },
-  { id: 'momo',   url: 'https://api.dicebear.com/9.x/big-smile/svg?seed=Momo&backgroundColor=fce4ec',    label: 'Momo'   },
-  { id: 'kana',   url: 'https://api.dicebear.com/9.x/big-smile/svg?seed=Kana&backgroundColor=e0f7fa',    label: 'Kana'   },
+  { id: 'hana', url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Hana&backgroundColor=f8bbd0', label: 'Hana' },
+  { id: 'yuki', url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Yuki&backgroundColor=e8eaf6', label: 'Yuki' },
+  { id: 'luna', url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=Luna&backgroundColor=ede7f6', label: 'Luna' },
+  { id: 'momo', url: 'https://api.dicebear.com/9.x/big-smile/svg?seed=Momo&backgroundColor=fce4ec', label: 'Momo' },
+  { id: 'kana', url: 'https://api.dicebear.com/9.x/big-smile/svg?seed=Kana&backgroundColor=e0f7fa', label: 'Kana' },
 ] as const;
 
 // ── Helpers de fecha y vencimiento ───────────────────────────────
@@ -83,18 +83,18 @@ interface DueInfo { label: string; severity: DueSeverity; }
 function getDueInfo(task: Task): DueInfo | null {
   if (!task.dueDate || task.status === 'done') return null;
 
-  const now        = new Date();
+  const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const dueDateTime = new Date(`${task.dueDate}T${task.dueTime ?? '23:59:59'}`);
   const dueDayStart = new Date(`${task.dueDate}T00:00:00`);
-  const diffDays    = Math.floor(
+  const diffDays = Math.floor(
     (dueDayStart.getTime() - todayStart.getTime()) / 86_400_000
   );
 
-  if (dueDateTime < now) return { label: 'Vencida',       severity: 'overdue'  };
-  if (diffDays === 0)    return { label: 'Vence hoy',     severity: 'today'    };
-  if (diffDays === 1)    return { label: 'Vence mañana',  severity: 'tomorrow' };
-  if (diffDays <= 4)     return { label: `En ${diffDays} días`, severity: 'soon' };
+  if (dueDateTime < now) return { label: 'Vencida', severity: 'overdue' };
+  if (diffDays === 0) return { label: 'Vence hoy', severity: 'today' };
+  if (diffDays === 1) return { label: 'Vence mañana', severity: 'tomorrow' };
+  if (diffDays <= 4) return { label: `En ${diffDays} días`, severity: 'soon' };
   return null;
 }
 
@@ -119,7 +119,7 @@ function resizeImageToDataURL(file: File): Promise<string> {
       img.onload = () => {
         const scale = Math.min(MAX / img.width, MAX / img.height, 1);
         const canvas = document.createElement('canvas');
-        canvas.width  = Math.round(img.width  * scale);
+        canvas.width = Math.round(img.width * scale);
         canvas.height = Math.round(img.height * scale);
         const ctx = canvas.getContext('2d');
         if (!ctx) { reject(new Error('Canvas no soportado.')); return; }
@@ -179,7 +179,7 @@ export function DashboardPage() {
     const unsubscribe = subscribeToUserTasks(
       user.uid,
       (updatedTasks) => { setTasks(updatedTasks); setIsLoading(false); },
-      (err)          => { setError('Error al cargar: ' + err.message); setIsLoading(false); }
+      (err) => { setError('Error al cargar: ' + err.message); setIsLoading(false); }
     );
     return unsubscribe;
   }, [user?.uid]);
@@ -197,9 +197,9 @@ export function DashboardPage() {
 
   // ── Stats ─────────────────────────────────────────────────────
   const stats = {
-    total:      tasks.length,
-    done:       doneTasks.length,
-    pending:    tasks.filter((t) => t.status === 'pending').length,
+    total: tasks.length,
+    done: doneTasks.length,
+    pending: tasks.filter((t) => t.status === 'pending').length,
     inProgress: tasks.filter((t) => t.status === 'in-progress').length,
   };
 
@@ -367,10 +367,10 @@ export function DashboardPage() {
 
         {/* Stats — ancho completo */}
         <section className="stats-grid" aria-label="Resumen de tareas">
-          <StatCard label="Total"       value={stats.total}      color="blue"   />
-          <StatCard label="Pendientes"  value={stats.pending}    color="yellow" />
+          <StatCard label="Total" value={stats.total} color="blue" />
+          <StatCard label="Pendientes" value={stats.pending} color="yellow" />
           <StatCard label="En progreso" value={stats.inProgress} color="purple" />
-          <StatCard label="Completadas" value={stats.done}       color="green"  />
+          <StatCard label="Completadas" value={stats.done} color="green" />
         </section>
 
         {/* ── Layout dos columnas ───────────────────────────── */}
@@ -576,7 +576,7 @@ export function DashboardPage() {
             <div className="profile-avatar-preview">
               {profilePhotoURL
                 ? <img src={profilePhotoURL} alt="Vista previa" className="profile-avatar-lg"
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                 : <div className="profile-avatar-lg-placeholder" aria-hidden="true">{avatarLetter}</div>}
               <span className="profile-email-badge">{user?.email}</span>
             </div>
@@ -653,7 +653,7 @@ interface TaskCardProps {
 }
 
 function TaskCard({ task, onEdit, onStatusChange, onDelete }: TaskCardProps) {
-  const due       = getDueInfo(task);
+  const due = getDueInfo(task);
   const dateLabel = formatDate(task);
 
   return (
