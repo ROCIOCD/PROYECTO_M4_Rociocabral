@@ -509,8 +509,73 @@ a:hover { color: var(--color-accent-hover); }
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg);
+  position: relative;
+  overflow-x: hidden;
+  /* Fondo gradiente Sakura — dark mode */
+  background:
+    radial-gradient(ellipse at 0%   0%,   hsla(280, 40%, 18%, 0.70) 0%, transparent 45%),
+    radial-gradient(ellipse at 100% 0%,   hsla(320, 40%, 16%, 0.60) 0%, transparent 45%),
+    radial-gradient(ellipse at 50%  100%, hsla(260, 45%, 12%, 0.50) 0%, transparent 50%),
+    radial-gradient(ellipse at 50%  50%,  hsla(290, 30%, 10%, 0.30) 0%, transparent 70%),
+    hsl(224, 20%, 8%);
 }
+[data-theme="light"] .dashboard {
+  /* Fondo degradado Sakura — light mode: pastel rosado/lavanda/perla */
+  background:
+    radial-gradient(ellipse at 0%   0%,   hsla(340, 65%, 90%, 0.80) 0%, transparent 45%),
+    radial-gradient(ellipse at 100% 0%,   hsla(310, 55%, 92%, 0.70) 0%, transparent 45%),
+    radial-gradient(ellipse at 50%  100%, hsla(270, 50%, 93%, 0.55) 0%, transparent 50%),
+    radial-gradient(ellipse at 50%  50%,  hsla(340, 40%, 96%, 0.40) 0%, transparent 70%),
+    hsl(340, 30%, 97%);
+}
+
+/* ── Capa sakura del dashboard ──────────────────────────────────── */
+.ds-bg {
+  position: fixed;      /* fixed: cubre siempre todo el viewport */
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Ramas fijas en las 4 esquinas */
+.ds-corner {
+  position: absolute;
+  overflow: visible;
+}
+.ds-corner--tl { top: 0; left: 0;   width: clamp(140px, 18vw, 220px); height: auto; }
+.ds-corner--tr { top: 0; right: 0;  width: clamp(140px, 18vw, 220px); height: auto; }
+.ds-corner--bl { bottom: 0; left: 0;  width: clamp(100px, 14vw, 160px); height: auto; }
+.ds-corner--br { bottom: 0; right: 0; width: clamp(100px, 14vw, 160px); height: auto; }
+
+/* Ramas del dashboard: más tenues que las de auth */
+.ds-branch { opacity: 0.45; }
+[data-theme="light"] .ds-branch { opacity: 0.50; }
+
+/* Pétalos dashboard: muy lentos, muy translúcidos */
+.ds-petal {
+  position: absolute;
+  top: -12px;
+  border-radius: 150% 0 150% 0;
+  background: var(--sk-petal);
+  opacity: 0.55;
+  animation-name: ds-fall;
+  animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  animation-iteration-count: infinite;
+  animation-duration: var(--ds-dur,   18s);
+  animation-delay:    var(--ds-delay, 0s);
+}
+
+@keyframes ds-fall {
+  0%   { transform: translateY(0)       translateX(0)                      rotate(0);                   opacity: 0;    }
+  6%   {                                                                                                  opacity: 0.55; }
+  94%  {                                                                                                  opacity: 0.25; }
+  100% { transform: translateY(102vh)   translateX(var(--ds-drift, 40px))  rotate(var(--ds-rot, 1turn)); opacity: 0;    }
+}
+
+/* El contenido del dashboard se sitúa por encima de la capa sakura */
+.navbar, .dashboard-main { position: relative; z-index: 1; }
+
 
 /* ── Navbar ───────────────────────────────────────────────────── */
 .navbar {
@@ -519,12 +584,18 @@ a:hover { color: var(--color-accent-hover); }
   justify-content: space-between;
   padding: 0 24px;
   height: 64px;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  /* Glassmorphism navbar */
+  background: hsla(224, 18%, 12%, 0.82);
+  border-bottom: 1px solid hsla(320, 40%, 50%, 0.18);
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+[data-theme="light"] .navbar {
+  background: hsla(0, 0%, 100%, 0.82);
+  border-bottom: 1px solid hsla(340, 60%, 78%, 0.28);
 }
 .navbar-brand {
   display: flex;
@@ -564,14 +635,23 @@ a:hover { color: var(--color-accent-hover); }
   gap: 12px;
 }
 .stat-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  /* Glassmorphism — se adapta a dark y light */
+  background: hsla(224, 18%, 14%, 0.75);
+  border: 1px solid hsla(320, 40%, 55%, 0.18);
   border-radius: var(--radius-lg);
   padding: 16px 20px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 2px 12px hsla(280, 40%, 5%, 0.3);
+}
+[data-theme="light"] .stat-card {
+  background: hsla(0, 0%, 100%, 0.80);
+  border: 1px solid hsla(340, 60%, 80%, 0.35);
+  box-shadow: 0 2px 12px hsla(340, 30%, 50%, 0.10);
 }
 .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .stat-value { font-size: 28px; font-weight: 700; color: var(--color-text-strong); }
@@ -605,6 +685,23 @@ a:hover { color: var(--color-accent-hover); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Card genérica (incluye el formulario de nueva tarea) ────── */
+/* Glassmorphism: se combina con .task-form en el Dashboard */
+.card {
+  background: hsla(224, 18%, 14%, 0.76);
+  border: 1px solid hsla(320, 35%, 50%, 0.16);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 12px hsla(280, 40%, 5%, 0.25);
+}
+[data-theme="light"] .card {
+  background: hsla(0, 0%, 100%, 0.84);
+  border: 1px solid hsla(340, 60%, 80%, 0.30);
+  box-shadow: 0 2px 12px hsla(340, 30%, 50%, 0.08);
+}
+
 /* ── Tasks list ───────────────────────────────────────────────── */
 .tasks-list {
   list-style: none;
@@ -618,15 +715,31 @@ a:hover { color: var(--color-accent-hover); }
   align-items: flex-start;
   gap: 14px;
   padding: 14px 16px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  /* Glassmorphism tarjeta de tarea */
+  background: hsla(224, 18%, 14%, 0.78);
+  border: 1px solid hsla(320, 35%, 50%, 0.16);
   border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px hsla(280, 40%, 5%, 0.25);
   transition: all var(--transition);
   animation: fadeIn 0.2s ease;
 }
+[data-theme="light"] .task-card {
+  background: hsla(0, 0%, 100%, 0.82);
+  border: 1px solid hsla(340, 60%, 80%, 0.30);
+  box-shadow: 0 2px 10px hsla(340, 30%, 50%, 0.08);
+}
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
 
-.task-card:hover { border-color: var(--color-border); box-shadow: var(--shadow-sm); }
+.task-card:hover {
+  border-color: hsla(320, 50%, 55%, 0.30);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+[data-theme="light"] .task-card:hover {
+  border-color: hsla(340, 70%, 72%, 0.45);
+}
 .task-card--done { opacity: 0.65; }
 .task-card--done .task-title { text-decoration: line-through; color: var(--color-text-muted); }
 .task-card--editing { flex-direction: column; }

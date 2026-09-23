@@ -39,6 +39,7 @@ import {
   deleteTask,
 } from '../services/taskService';
 import type { Task, TaskInput, TaskStatus, EmailPayload, ProfileUpdate } from '../types';
+import { DashboardSakura } from '../components/DashboardSakura';
 
 // ── Constantes de UI ──────────────────────────────────────────────
 const STATUS_LABELS: Record<TaskStatus, string> = {
@@ -314,6 +315,9 @@ export function DashboardPage() {
 
   return (
     <div className="dashboard">
+      {/* Capa decorativa sakura de fondo — ramas fijas + 6 pétalos lentos */}
+      <DashboardSakura />
+
       {/* ── Navbar ─────────────────────────────────────────────── */}
       <nav className="navbar">
         {/* Izquierda: logo + toggle apilados */}
