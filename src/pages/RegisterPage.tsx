@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus, Mail, Lock, AlertCircle, CheckCircle, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
+import { SakuraBackground } from '../components/SakuraBackground';
 
 export function RegisterPage() {
   const { register } = useAuth();
@@ -54,7 +55,10 @@ export function RegisterPage() {
 
   return (
     <main className="auth-page">
-      {/* Botón de tema — esquina superior derecha, antes del registro */}
+      {/* Fondo decorativo sakura (ramas SVG + pétalos animados) */}
+      <SakuraBackground />
+
+      {/* Botón de tema — esquina superior derecha */}
       <div className="auth-theme-toggle">
         <button
           id="register-theme-toggle"

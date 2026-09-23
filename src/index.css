@@ -66,7 +66,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+
+  /* Sakura tokens (dark mode default) */
+  --sk-branch:  hsla(280, 35%, 40%, 0.60);
+  --sk-petal:   hsla(325, 68%, 66%, 0.48);
+  --sk-center:  hsla(48,  85%, 82%, 0.82);
+  --sk-inner:   hsla(50,  90%, 65%, 0.60);
 }
+
 
 /* ── Modo Claro — sobrescribe tokens al activar data-theme="light" */
 [data-theme="light"] {
@@ -95,7 +102,14 @@
   --shadow-md:  0 4px 16px hsla(220, 20%, 40%, 0.12);
   --shadow-lg:  0 8px 32px hsla(220, 20%, 40%, 0.16);
   --shadow-glow:0 0 24px  hsla(258, 75%, 55%, 0.20);
+
+  /* Sakura tokens (light mode) */
+  --sk-branch:  hsla(15,  35%, 38%, 0.52);
+  --sk-petal:   hsla(340, 82%, 72%, 0.72);
+  --sk-center:  hsla(45,  90%, 65%, 0.92);
+  --sk-inner:   hsla(50,  90%, 52%, 0.70);
 }
+
 
 /* Transición suave al cambiar de tema */
 html {
@@ -331,86 +345,85 @@ a:hover { color: var(--color-accent-hover); }
   padding: 24px;
   position: relative;
   overflow: hidden;
-  /* Fondo base con gradiente suave */
   background:
-    radial-gradient(ellipse at 15% 15%, hsla(320, 60%, 35%, 0.20) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 85%, hsla(258, 70%, 35%, 0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 0%,  hsla(340, 80%, 40%, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 15% 10%,  hsla(320, 55%, 32%, 0.22) 0%, transparent 52%),
+    radial-gradient(ellipse at 85% 90%,  hsla(260, 60%, 30%, 0.18) 0%, transparent 52%),
+    radial-gradient(ellipse at 50% 50%,  hsla(340, 50%, 22%, 0.08) 0%, transparent 65%),
     var(--color-bg);
 }
+[data-theme="light"] .auth-page {
+  background:
+    radial-gradient(ellipse at 15% 10%,  hsla(340, 70%, 88%, 0.55) 0%, transparent 52%),
+    radial-gradient(ellipse at 85% 90%,  hsla(280, 50%, 88%, 0.40) 0%, transparent 52%),
+    radial-gradient(ellipse at 50% 50%,  hsla(340, 60%, 94%, 0.30) 0%, transparent 65%),
+    hsl(340, 30%, 96%);
+}
 
-/* Pétalos decorativos con pseudo-elementos + SVG inline data-uri */
-.auth-page::before,
-.auth-page::after {
-  content: '';
+/* ── SakuraBackground component ──────────────────────────── */
+.sakura-bg {
   position: absolute;
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
-  border-radius: 50% 50% 30% 70% / 60% 40% 60% 40%;
-  opacity: 0.12;
-  animation: sakura-float 12s ease-in-out infinite alternate;
-}
-.auth-page::before {
-  width: 340px;
-  height: 340px;
-  top: -80px;
-  left: -80px;
-  background: radial-gradient(circle at 40% 40%,
-    hsla(340, 85%, 70%, 0.8),
-    hsla(310, 70%, 65%, 0.4),
-    transparent 70%);
-  animation-delay: 0s;
-}
-.auth-page::after {
-  width: 280px;
-  height: 280px;
-  bottom: -60px;
-  right: -60px;
-  background: radial-gradient(circle at 60% 60%,
-    hsla(320, 80%, 72%, 0.8),
-    hsla(280, 65%, 60%, 0.4),
-    transparent 70%);
-  animation-delay: -6s;
+  z-index: 0;
 }
 
-/* Pétalos adicionales con un div de utilidad .sakura-petals */
-.sakura-petal {
+/* SVG de ramas — posicionados en esquinas */
+.sk-svg {
   position: absolute;
+  overflow: visible;
+}
+.sk-svg--tl {
+  top:  -30px;
+  left: -30px;
+  width:  clamp(280px, 45vw, 460px);
+  height: clamp(240px, 38vh, 390px);
+}
+.sk-svg--br {
+  bottom: -30px;
+  right:  -30px;
+  width:  clamp(240px, 38vw, 400px);
+  height: clamp(200px, 32vh, 320px);
+}
+
+/* Ramas SVG */
+.sk-branch {
+  stroke: var(--sk-branch);
+  fill:   none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Pétalos SVG (5 elípses por flor) */
+.sk-petal {
+  fill: var(--sk-petal);
+}
+
+/* Centros de las flores */
+.sk-center      { fill: var(--sk-center); }
+.sk-center-inner { fill: var(--sk-inner); }
+
+/* Pétalos cayendo — animados con custom properties */
+.sk-falling-petal {
+  position: absolute;
+  top: -15px;
   border-radius: 150% 0 150% 0;
-  opacity: 0;
-  pointer-events: none;
-  animation: sakura-fall linear infinite;
+  background: var(--sk-petal);
+  animation-name: sk-fall;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+  animation-duration:  var(--fall-dur,   8s);
+  animation-delay:     var(--fall-delay, 0s);
 }
 
-@keyframes sakura-float {
-  0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
-  50%  { transform: translate(20px, 30px) rotate(15deg) scale(1.05); }
-  100% { transform: translate(-10px, 15px) rotate(-10deg) scale(0.97); }
+@keyframes sk-fall {
+  0%   { transform: translateY(0)      translateX(0)                       rotate(0);                    opacity: 0; }
+  8%   {                                                                                                   opacity: 0.85; }
+  92%  {                                                                                                   opacity: 0.35; }
+  100% { transform: translateY(105vh)  translateX(var(--fall-drift, 50px)) rotate(var(--fall-rotate, 1turn)); opacity: 0; }
 }
 
-@keyframes sakura-fall {
-  0%   { transform: translateY(-20px) rotate(0deg);   opacity: 0; }
-  10%  { opacity: 0.7; }
-  90%  { opacity: 0.4; }
-  100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-}
-
-/* Modo claro: pétalos más vivos y rosados */
-[data-theme="light"] .auth-page::before {
-  opacity: 0.20;
-  background: radial-gradient(circle at 40% 40%,
-    hsla(340, 90%, 75%, 0.9),
-    hsla(310, 75%, 70%, 0.5),
-    transparent 70%);
-}
-[data-theme="light"] .auth-page::after {
-  opacity: 0.18;
-  background: radial-gradient(circle at 60% 60%,
-    hsla(320, 85%, 78%, 0.9),
-    hsla(280, 70%, 65%, 0.5),
-    transparent 70%);
-}
-
-/* Botón de tema sobre la tarjeta de autenticación */
+/* Botón de tema en la esquina de la pantalla de auth */
 .auth-theme-toggle {
   position: absolute;
   top: 20px;
@@ -426,11 +439,19 @@ a:hover { color: var(--color-accent-hover); }
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: 40px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), 0 0 0 1px var(--color-border-soft);
   display: flex;
   flex-direction: column;
   gap: 24px;
   animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Sienta por encima del SakuraBackground */
+  position: relative;
+  z-index: 1;
+}
+[data-theme="light"] .auth-card {
+  background: hsla(0, 0%, 100%, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 @keyframes slideUp {
@@ -948,4 +969,96 @@ input[type="time"] {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   padding: 3px 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GALERÍA DE AVATARES PREDETERMINADOS
+   ═══════════════════════════════════════════════════════════════ */
+.avatar-gallery {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  padding: 4px 0;
+}
+@media (max-width: 480px) {
+  .avatar-gallery { grid-template-columns: repeat(4, 1fr); }
+}
+.avatar-option {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2.5px solid var(--color-border);
+  transition: all var(--transition);
+  background: var(--color-surface-2);
+  flex-shrink: 0;
+}
+.avatar-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+.avatar-option:hover {
+  border-color: var(--color-accent);
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px var(--color-accent-bg);
+}
+.avatar-option--selected {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-bg), var(--shadow-glow);
+  transform: scale(1.08);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SUBIDA DE FOTO (FILE UPLOAD)
+   ═══════════════════════════════════════════════════════════════ */
+.file-upload-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--color-surface-2);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.file-upload-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: var(--color-accent-bg);
+}
+.file-upload-hint {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* Profile modal scrollable */
+.modal--profile {
+  max-height: 90vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.modal--profile::-webkit-scrollbar { width: 4px; }
+.modal--profile::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+
+/* Separador de sección en modal */
+.modal-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
 }
