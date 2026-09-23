@@ -89,7 +89,7 @@ export default async function handler(
     };
     res.status(400).json(response);
     return;
-  } g
+  }
 
   const { to, subject, body } = req.body;
   const fromEmail = process.env['SES_FROM_EMAIL'];
