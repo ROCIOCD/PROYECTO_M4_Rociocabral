@@ -18,17 +18,17 @@ import {
   type SendEmailCommandInput,
 } from '@aws-sdk/client-ses';
 
+interface ApiResponse<T = unknown> {
+  success: boolean;
+  data: T;
+  error?: string;
+  message?: string;
+  messageId?: string;
+}
 interface EmailPayload {
   to: string;
   subject: string;
   body: string;
-}
-
-interface ApiResponse {
-  ok: boolean;
-  message?: string;
-  error?: string;
-  messageId?: string;
 }
 
 // ── Inicialización del cliente SES ────────────────────────────────
@@ -68,9 +68,10 @@ export default async function handler(
   req: VercelRequest,
   res: VercelResponse
 ): Promise<void> {
+
   // Solo acepta POST
   if (req.method !== 'POST') {
-    const response: ApiResponse<null> = {
+    const response: ApiResponse = {
       success: false,
       data: null,
       error: `Método ${req.method ?? 'desconocido'} no permitido. Usá POST.`,
@@ -81,7 +82,7 @@ export default async function handler(
 
   // Valida el payload
   if (!validatePayload(req.body)) {
-    const response: ApiResponse<null> = {
+    const response: ApiResponse = {
       success: false,
       data: null,
       error: 'Payload inválido. Se requieren: to (string), subject (string), body (string).',
@@ -94,7 +95,7 @@ export default async function handler(
   const fromEmail = process.env['SES_FROM_EMAIL'];
 
   if (!fromEmail) {
-    const response: ApiResponse<null> = {
+    const response: ApiResponse = {
       success: false,
       data: null,
       error: 'Variable de entorno SES_FROM_EMAIL no configurada.',
@@ -132,7 +133,7 @@ export default async function handler(
     const response: ApiResponse<{ messageId: string }> = {
       success: true,
       data: { messageId: result.MessageId ?? '' },
-      error: null,
+
     };
     res.status(200).json(response);
   } catch (err: unknown) {
