@@ -17,7 +17,19 @@ import {
   SendEmailCommand,
   type SendEmailCommandInput,
 } from '@aws-sdk/client-ses';
-import type { EmailPayload, ApiResponse } from '../src/types';
+
+interface EmailPayload {
+  to: string;
+  subject: string;
+  body: string;
+}
+
+interface ApiResponse {
+  ok: boolean;
+  message?: string;
+  error?: string;
+  messageId?: string;
+}
 
 // ── Inicialización del cliente SES ────────────────────────────────
 // Se instancia por invocación (serverless stateless) usando
@@ -76,7 +88,7 @@ export default async function handler(
     };
     res.status(400).json(response);
     return;
-  }
+  } g
 
   const { to, subject, body } = req.body;
   const fromEmail = process.env['SES_FROM_EMAIL'];
