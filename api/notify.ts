@@ -63,6 +63,16 @@ function validatePayload(body: unknown): body is EmailPayload {
   );
 }
 
+// ── Helper: respuesta de error ──────────────────────────────────
+function sendError(
+  res: VercelResponse,
+  status: number,
+  error: string
+): void {
+  const response: ApiResponse = { success: false, data: null, error };
+  res.status(status).json(response);
+}
+
 // ── Handler principal ─────────────────────────────────────────────
 export default async function handler(
   req: VercelRequest,
@@ -71,37 +81,19 @@ export default async function handler(
 
   // Solo acepta POST
   if (req.method !== 'POST') {
-    const response: ApiResponse = {
-      success: false,
-      data: null,
-      error: `Método ${req.method ?? 'desconocido'} no permitido. Usá POST.`,
-    };
-    res.status(405).json(response);
-    return;
+    return sendError(res, 405, `Método ${req.method ?? 'desconocido'} no permitido. Usá POST.`);
   }
 
   // Valida el payload
   if (!validatePayload(req.body)) {
-    const response: ApiResponse = {
-      success: false,
-      data: null,
-      error: 'Payload inválido. Se requieren: to (string), subject (string), body (string).',
-    };
-    res.status(400).json(response);
-    return;
+    return sendError(res, 400, 'Payload inválido. Se requieren: to (string), subject (string), body (string).');
   }
 
   const { to, subject, body } = req.body;
   const fromEmail = process.env['SES_FROM_EMAIL'];
 
   if (!fromEmail) {
-    const response: ApiResponse = {
-      success: false,
-      data: null,
-      error: 'Variable de entorno SES_FROM_EMAIL no configurada.',
-    };
-    res.status(500).json(response);
-    return;
+    return sendError(res, 500, 'Variable de entorno SES_FROM_EMAIL no configurada.');
   }
 
   // Construye y envía el comando SES
@@ -139,12 +131,6 @@ export default async function handler(
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Error desconocido al enviar email.';
     console.error('[api/notify] Error SES:', message);
-
-    const response: ApiResponse<null> = {
-      success: false,
-      data: null,
-      error: message,
-    };
-    res.status(500).json(response);
+    sendError(res, 500, message);
   }
 }
