@@ -237,13 +237,16 @@ export function DashboardPage() {
       await createTask(user.uid, input);
       try {
         const apiBase = import.meta.env.VITE_API_BASE_URL as string;
+        // ⚠️ SES Sandbox: solo se pueden enviar emails a direcciones verificadas.
+        // Mientras la cuenta esté en Sandbox, forzamos el destinatario al email verificado.
+        const sandboxTo = 'rociocabral27@gmail.com';
         await fetch(`${apiBase}/api/notify`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            to: user.email,
-            subject: `Nueva tarea: ${input.title}`,
-            body: `Tarea creada:\nTítulo: ${input.title}\nEstado: ${input.status}\nFecha: ${input.dueDate ?? 'Sin fecha'}${input.dueTime ? ` ${input.dueTime}` : ''}\n— MateCode Tasks`,
+            to: sandboxTo,
+            subject: `Nueva tarea de ${user.email ?? 'usuario'}: ${input.title}`,
+            body: `Tarea creada:\nUsuario: ${user.email ?? 'desconocido'}\nTítulo: ${input.title}\nEstado: ${input.status}\nFecha: ${input.dueDate ?? 'Sin fecha'}${input.dueTime ? ` ${input.dueTime}` : ''}\n— MateCode Tasks`,
           } satisfies EmailPayload),
         });
       } catch (notifyErr) { console.warn('[notify]', notifyErr); }
