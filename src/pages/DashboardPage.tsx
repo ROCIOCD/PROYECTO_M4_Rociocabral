@@ -245,8 +245,12 @@ export function DashboardPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             to: sandboxTo,
-            subject: `Nueva tarea de ${user.email ?? 'usuario'}: ${input.title}`,
-            body: `Tarea creada:\nUsuario: ${user.email ?? 'desconocido'}\nTítulo: ${input.title}\nEstado: ${input.status}\nFecha: ${input.dueDate ?? 'Sin fecha'}${input.dueTime ? ` ${input.dueTime}` : ''}\n— MateCode Tasks`,
+            subject: `🌸 Nueva tarea: ${input.title}`,
+            taskTitle:  input.title,
+            taskStatus: input.status,
+            taskDate:   input.dueDate  ?? undefined,
+            taskTime:   input.dueTime  ?? undefined,
+            taskUser:   user.email ?? 'desconocido',
           } satisfies EmailPayload),
         });
       } catch (notifyErr) { console.warn('[notify]', notifyErr); }

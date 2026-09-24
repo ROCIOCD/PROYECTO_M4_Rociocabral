@@ -49,7 +49,12 @@ export interface ProfileUpdate {
 export interface EmailPayload {
   to: string;
   subject: string;
-  body: string;
+  /** Campos estructurados usados por el template HTML Sakura en api/notify.ts */
+  taskTitle: string;
+  taskStatus: string;
+  taskDate?: string;
+  taskTime?: string;
+  taskUser?: string;
 }
 
 // ── Wrapper genérico para respuestas de la API ───────────────────
