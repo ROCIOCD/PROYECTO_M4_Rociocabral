@@ -127,21 +127,35 @@ function buildHtmlTemplate(payload: EmailPayload): string {
         <!-- Header banner -->
         <tr>
           <td style="background:linear-gradient(135deg,#fce7f3 0%,#fbcfe8 50%,#f9a8d4 100%);padding:32px 32px 24px;text-align:center;">
-            <div style="font-size:40px;margin-bottom:8px;">🌸</div>
+            <!-- Flor animada: GIF transparente de cerezo -->
+            <img
+              src="https://media.giphy.com/media/3o7TKSjRrfIPjeiVyO/giphy.gif"
+              alt="Flor de cerezo"
+              width="56" height="56"
+              style="display:block;margin:0 auto 10px;border-radius:50%;border:2px solid #f9a8d4;box-shadow:0 0 12px rgba(219,39,119,0.18);"
+            />
             <h1 style="margin:0;font-size:22px;font-weight:700;color:#be185d;letter-spacing:-0.3px;">MateCode Tasks</h1>
             <p style="margin:6px 0 0;font-size:12px;color:#9d174d;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;">Nueva tarea creada</p>
           </td>
         </tr>
 
-        <!-- Body -->
+        <!-- Body con watermark de ramas sakura -->
         <tr>
-          <td style="padding:28px 32px 24px;">
+          <td style="
+            padding:28px 32px 24px;
+            background-color:#fff8fb;
+            background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22 opacity=%220.13%22><g fill=%22%23db2777%22><ellipse cx=%2230%22 cy=%2240%22 rx=%228%22 ry=%224%22 transform=%22rotate(-30 30 40)%22/><ellipse cx=%2240%22 cy=%2235%22 rx=%228%22 ry=%224%22 transform=%22rotate(30 40 35)%22/><ellipse cx=%2235%22 cy=%2228%22 rx=%228%22 ry=%224%22 transform=%22rotate(-60 35 28)%22/><ellipse cx=%2225%22 cy=%2232%22 rx=%228%22 ry=%224%22 transform=%22rotate(60 25 32)%22/><ellipse cx=%2235%22 cy=%2238%22 rx=%228%22 ry=%224%22/><circle cx=%2235%22 cy=%2238%22 r=%223%22 fill=%22%23fda4af%22/><line x1=%2235%22 y1=%2238%22 x2=%2235%22 y2=%2270%22 stroke=%22%23be185d%22 stroke-width=%222%22 stroke-linecap=%22round%22/><line x1=%2235%22 y1=%2255%22 x2=%2255%22 y2=%2245%22 stroke=%22%23be185d%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/><line x1=%2235%22 y1=%2262%22 x2=%2215%22 y2=%2252%22 stroke=%22%23be185d%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/><ellipse cx=%2257%22 cy=%2242%22 rx=%226%22 ry=%223%22 transform=%22rotate(-30 57 42)%22/><ellipse cx=%2265%22 cy=%2238%22 rx=%226%22 ry=%223%22 transform=%22rotate(30 65 38)%22/><ellipse cx=%2260%22 cy=%2233%22 rx=%226%22 ry=%223%22 transform=%22rotate(-60 60 33)%22/><ellipse cx=%2251%22 cy=%2236%22 rx=%226%22 ry=%223%22 transform=%22rotate(60 51 36)%22/><circle cx=%2258%22 cy=%2240%22 r=%222%22 fill=%22%23fda4af%22/><ellipse cx=%22140%22 cy=%22130%22 rx=%228%22 ry=%224%22 transform=%22rotate(-45 140 130)%22/><ellipse cx=%22150%22 cy=%22125%22 rx=%228%22 ry=%224%22 transform=%22rotate(45 150 125)%22/><ellipse cx=%22145%22 cy=%22118%22 rx=%228%22 ry=%224%22 transform=%22rotate(-70 145 118)%22/><ellipse cx=%22135%22 cy=%22122%22 rx=%228%22 ry=%224%22 transform=%22rotate(70 135 122)%22/><ellipse cx=%22145%22 cy=%22128%22 rx=%228%22 ry=%224%22/><circle cx=%22145%22 cy=%22128%22 r=%223%22 fill=%22%23fda4af%22/><line x1=%22145%22 y1=%22128%22 x2=%22145%22 y2=%22160%22 stroke=%22%23be185d%22 stroke-width=%222%22 stroke-linecap=%22round%22/><line x1=%22145%22 y1=%22145%22 x2=%22165%22 y2=%22135%22 stroke=%22%23be185d%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/><line x1=%22145%22 y1=%22152%22 x2=%22125%22 y2=%22142%22 stroke=%22%23be185d%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/></g></svg>');
+            background-repeat: repeat;
+            background-size: 200px 200px;
+          ">
 
             <h2 style="margin:0 0 22px;font-size:19px;font-weight:700;color:#1e1b4b;line-height:1.35;">
               ${escapeHtml(taskTitle)}
             </h2>
 
-            <table width="100%" cellpadding="0" cellspacing="0">
+            <!-- Tabla con fondo semitransparente para legibilidad sobre el watermark -->
+            <table width="100%" cellpadding="0" cellspacing="0"
+              style="background:rgba(255,255,255,0.88);border-radius:10px;border:1px solid #fce7f3;padding:4px 12px;">
 
               <!-- Estado -->
               <tr>

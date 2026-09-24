@@ -151,6 +151,7 @@ export function DashboardPage() {
   const [formDueDate, setFormDueDate] = useState('');
   const [formDueTime, setFormDueTime] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
 
   // ── Modal EDICIÓN de tarea ────────────────────────────────────
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -240,19 +241,24 @@ export function DashboardPage() {
         // ⚠️ SES Sandbox: solo se pueden enviar emails a direcciones verificadas.
         // Mientras la cuenta esté en Sandbox, forzamos el destinatario al email verificado.
         const sandboxTo = 'rociocabral27@gmail.com';
-        await fetch(`${apiBase}/api/notify`, {
+        const notifyRes = await fetch(`${apiBase}/api/notify`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             to: sandboxTo,
             subject: `🌸 Nueva tarea: ${input.title}`,
-            taskTitle:  input.title,
+            taskTitle: input.title,
             taskStatus: input.status,
-            taskDate:   input.dueDate  ?? undefined,
-            taskTime:   input.dueTime  ?? undefined,
-            taskUser:   user.email ?? 'desconocido',
+            taskDate: input.dueDate ?? undefined,
+            taskTime: input.dueTime ?? undefined,
+            taskUser: user.email ?? 'desconocido',
           } satisfies EmailPayload),
         });
+        if (notifyRes.ok) {
+          // Mostrar toast temático Sakura al confirmar notificación enviada
+          setToastVisible(true);
+          setTimeout(() => setToastVisible(false), 4000);
+        }
       } catch (notifyErr) { console.warn('[notify]', notifyErr); }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error al crear la tarea.');
@@ -471,7 +477,7 @@ export function DashboardPage() {
                   <button id="create-task-submit" type="submit" className="btn btn-primary"
                     disabled={isSubmitting || !formTitle.trim()}>
                     {isSubmitting
-                      ? <><span className="btn-spinner" aria-hidden="true" /> Guardando...</>
+                      ? <><span className="btn-spinner" aria-hidden="true" /> Guardando y notificando...</>
                       : 'Guardar tarea'}
                   </button>
                 </div>
@@ -522,18 +528,18 @@ export function DashboardPage() {
             </div>
             <div className="form-field">
               <label htmlFor="edit-title" className="form-label">Título *</label>
-              <input id="edit-title" type="text" className="form-input"
+              <input id="edit-title" name="edit-title" type="text" className="form-input"
                 value={editTitle} onChange={(e) => setEditTitle(e.target.value)} autoFocus />
             </div>
             <div className="form-field">
               <label htmlFor="edit-description" className="form-label">Descripción</label>
-              <textarea id="edit-description" className="form-input form-textarea"
+              <textarea id="edit-description" name="edit-description" className="form-input form-textarea"
                 value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={3} />
             </div>
             <div className="form-field">
               <label htmlFor="edit-status" className="form-label">Estado</label>
               <div className="form-select-wrapper">
-                <select id="edit-status" className="form-select"
+                <select id="edit-status" name="edit-status" className="form-select"
                   value={editStatus} onChange={(e) => setEditStatus(e.target.value as TaskStatus)}>
                   {(Object.keys(STATUS_LABELS) as TaskStatus[]).map((s) => (
                     <option key={s} value={s}>{STATUS_LABELS[s]}</option>
@@ -545,12 +551,12 @@ export function DashboardPage() {
             <div className="form-row">
               <div className="form-field">
                 <label htmlFor="edit-due-date" className="form-label">Fecha límite</label>
-                <input id="edit-due-date" type="date" className="form-input"
+                <input id="edit-due-date" name="edit-due-date" type="date" className="form-input"
                   value={editDueDate} onChange={(e) => setEditDueDate(e.target.value)} min="2026-01-01" />
               </div>
               <div className="form-field form-field--sm">
                 <label htmlFor="edit-due-time" className="form-label">Hora</label>
-                <input id="edit-due-time" type="time" className="form-input"
+                <input id="edit-due-time" name="edit-due-time" type="time" className="form-input"
                   value={editDueTime} onChange={(e) => setEditDueTime(e.target.value)} />
               </div>
             </div>
@@ -643,6 +649,38 @@ export function DashboardPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── Toast temático Sakura ──────────────────────────── */}
+      {toastVisible && (
+        <div
+          id="sakura-toast"
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'fixed',
+            bottom: '28px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
+            color: '#be185d',
+            fontWeight: 700,
+            fontSize: '14px',
+            padding: '12px 24px',
+            borderRadius: '999px',
+            boxShadow: '0 4px 20px rgba(219,39,119,0.22)',
+            border: '1.5px solid #f9a8d4',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            animation: 'toastFadeIn 0.3s ease',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <span style={{ fontSize: '18px' }}>🌸</span>
+          ¡Tarea creada y notificación enviada! 🌸
         </div>
       )}
     </div>
